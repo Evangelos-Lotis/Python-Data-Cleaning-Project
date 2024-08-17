@@ -1,9 +1,9 @@
-In this Python project the main purpose is to: 
-● Remove Duplicates
-● Drop unused Columns
+In this Python project the main purpose is to analyze sales data for video games from a CSV file using pandas, numpy, and matplotlib: 
+● Check Duplicates
+● Check Dates
+● Check Null Values
 ● Strip 
 ● Clean/Standarde Phone Numbers
-● Split Columns
-● Standardize Column Values using Replace
-● Fill Null Values
 ● Filter Down Rows of Data
+● Group Data
+● Visualize with bar chart and scatter plot

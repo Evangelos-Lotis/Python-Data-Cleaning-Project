@@ -6,4 +6,4 @@ In this Python project the main purpose is to analyze sales data for video games
 ● Clean/Standarde Phone Numbers
 ● Filter Down Rows of Data
 ● Group Data
-● Visualize with bar chart and scatter plot
+● Visualize With Bar Chart And Scatter Plot

@@ -1,65 +1,70 @@
 import pandas as pd
-import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv(r"C:\Users\lotis\Desktop\DataAnalysis\Αρχεία Alex για Tableau\pandas\Customer Call List.csv")
+df = pd.read_csv(r"C:\Users\lotis\Downloads\vgsales.csv")
+pd.set_option('display.max.columns', 12)
 
+print('The Shape of this DF is: ',df.shape)
+print('The Info of this DF is: ')
 print(df.info())
+print('The Statistics of this DF are: ')
 print(df.describe())
+print('Show if null values:')
 print(df.isnull().sum())
-print(df.nunique())
-
-pd.set_option('display.max.columns', 9)
-print(df)
-
-duplicates = df.duplicated()
+print('Duplicates:')
 print(df.duplicated())
-df = df.drop_duplicates()
+
+df.dropna(inplace=True)
+print(df)
+print('Show if null values:')
+print(df.isnull().sum())
+
+df["Date"] = pd.to_datetime(df['Date'])
+print('Convert Date to Datetime:')
 print(df)
 
-df = df.drop(columns = 'Not_Useful_Column')
+df['PhoneNumber'] = df['PhoneNumber'].str.replace('[^a-zA-Z0-9.]', '', regex=True)
+df['PhoneNumber'] = df['PhoneNumber'].apply(lambda x: str(x))
+df['PhoneNumber'] = df['PhoneNumber'].apply(lambda x: x[0:3] + '-' + x[3:6] + '-' + x[6:10])
+print('Cleaning and standardizing phone numbers:')
 print(df)
 
-df['Last_Name'] = df['Last_Name'].str.strip('123._/')
+df['Publisher'] = df['Publisher'].str.strip('123_-/.')
+print('Stripping the publisher column:')
 print(df)
 
-df['Phone_Number'] = df['Phone_Number'].str.replace('[^a-zA-Z0-9.]','', regex=True)
-print(df)
-df["Phone_Number"] = df["Phone_Number"].apply(lambda x: str(x))
-df["Phone_Number"] = df["Phone_Number"].apply(lambda x: x[0:3] + '-' + x[3:6] + '-' + x[6:10])
-print(df)
+df_topseller_videogame = df.groupby('Name')['Global_Sales'].sum().sort_values(ascending=False).head(10)
+print('The top-selling video games of all time are:')
+print(df_topseller_videogame)
 
-df['Phone_Number'] = df['Phone_Number'].str.replace('nan--','', regex=True)
-df['Phone_Number'] = df['Phone_Number'].str.replace('Na--','', regex=True)
-print(df)
+df_platform = df.groupby('Platform')['Global_Sales'].sum().sort_values(ascending=False)
+print('The most popular platform is:')
+print(df_platform)
 
-df[["Street_Address", "State", "Zip_Code"]] = df['Address'].str.split(',', n=2, expand=True)
-print(df)
+df_genre = df.groupby('Genre')['Global_Sales'].sum().sort_values(ascending=False)
+print('The most popular genre is:')
+print(df_genre)
 
-df['Paying Customer'] = df['Paying Customer'].str.replace('Yes', 'Y')
-df['Paying Customer'] = df['Paying Customer'].str.replace('No', 'N')
-df['Do_Not_Contact'] = df['Do_Not_Contact'].str.replace('Yes', 'Y')
-df['Do_Not_Contact'] = df['Do_Not_Contact'].str.replace('No', 'N')
-df = df.replace('N/a', '')
-df = df.fillna('')
-pd.set_option('display.max.columns',11)
-print(df)
+print(df.columns)
+df_sales = df[['NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales']].sum()
+df_sales.plot(kind='bar')
+plt.xlabel('regions')
+plt.ylabel('sales')
+plt.title('sales by region')
+plt.show()
 
-for x in df.index:
-    if df.loc[x, 'Do_Not_Contact'] == 'Y':
-        df.drop(x, inplace=True)
-print(df)
+plt.scatter(df['Year'],df['Global_Sales'])
+plt.xlabel('year of release')
+plt.ylabel('global sales')
+plt.title('year of release vs global sales')
+plt.show()
 
-for x in df.index:
-    if df.loc[x, 'Phone_Number'] == '':
-        df.drop(x, inplace=True)
-print(df)
+df_publishers = df.groupby('Publisher')['Global_Sales'].sum().sort_values(ascending=False)
+print(df_publishers)
 
-df = df.reset_index(drop=True)
-df = df.drop('Address', axis=1)
-print(df)
-
-df.corr(numeric_only = True)
-sns.heatmap(df.corr(numeric_only = True), annot = True)
-plt.rcParams['figure.figsize'] = (20,7)
+df_publishers.head(10).plot(kind='bar')
+plt.xlabel('sales')
+plt.ylabel('publisher')
+plt.title('top publishers in sales')
 plt.show()
